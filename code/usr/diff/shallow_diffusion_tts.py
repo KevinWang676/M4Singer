@@ -158,7 +158,7 @@ class GaussianDiffusion(nn.Module):
 
     @torch.no_grad()
     def p_sample(self, x, t, cond, clip_denoised=True, repeat_noise=False):
-        b, *_, device = *x.shape, x.device
+        b, *_, device = *x.shape, "cuda"
         model_mean, _, model_log_variance = self.p_mean_variance(x=x, t=t, cond=cond, clip_denoised=clip_denoised)
         noise = noise_like(x.shape, device, repeat_noise)
         # no noise when t == 0
@@ -229,7 +229,7 @@ class GaussianDiffusion(nn.Module):
 
     def forward(self, txt_tokens, mel2ph=None, spk_embed=None,
                 ref_mels=None, f0=None, uv=None, energy=None, infer=False, **kwargs):
-        b, *_, device = *txt_tokens.shape, txt_tokens.device
+        b, *_, device = *txt_tokens.shape, "cuda"
         ret = self.fs2(txt_tokens, mel2ph, spk_embed, ref_mels, f0, uv, energy,
                        skip_decoder=(not infer), infer=infer, **kwargs)
         cond = ret['decoder_inp'].transpose(1, 2)
@@ -288,7 +288,7 @@ class GaussianDiffusion(nn.Module):
 class OfflineGaussianDiffusion(GaussianDiffusion):
     def forward(self, txt_tokens, mel2ph=None, spk_embed=None,
                 ref_mels=None, f0=None, uv=None, energy=None, infer=False, **kwargs):
-        b, *_, device = *txt_tokens.shape, txt_tokens.device
+        b, *_, device = *txt_tokens.shape, "cuda"
 
         ret = self.fs2(txt_tokens, mel2ph, spk_embed, ref_mels, f0, uv, energy,
                        skip_decoder=True, infer=True, **kwargs)
