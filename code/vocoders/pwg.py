@@ -25,9 +25,9 @@ def load_pwg_model(config_path, checkpoint_path, stats_path):
         device = torch.device("cpu")
     model = ParallelWaveGANGenerator(**config["generator_params"])
 
-    ckpt_dict = torch.load(checkpoint_path, map_location="cpu")
+    ckpt_dict = torch.load(checkpoint_path) #torch.load(checkpoint_path, map_location="cpu")
     if 'state_dict' not in ckpt_dict:  # official vocoder
-        model.load_state_dict(torch.load(checkpoint_path, map_location="cpu")["model"]["generator"])
+        model.load_state_dict(torch.load(checkpoint_path)["model"]["generator"])
         scaler = StandardScaler()
         if config["format"] == "hdf5":
             scaler.mean_ = read_hdf5(stats_path, "mean")
@@ -40,7 +40,7 @@ def load_pwg_model(config_path, checkpoint_path, stats_path):
     else:  # custom PWG vocoder
         fake_task = nn.Module()
         fake_task.model_gen = model
-        fake_task.load_state_dict(torch.load(checkpoint_path, map_location="cpu")["state_dict"], strict=False)
+        fake_task.load_state_dict(torch.load(checkpoint_path)["state_dict"], strict=False)
         scaler = None
 
     model.remove_weight_norm()
