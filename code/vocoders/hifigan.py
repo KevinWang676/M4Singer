@@ -16,7 +16,7 @@ from vocoders.vocoder_utils import denoise
 
 def load_model(config_path, checkpoint_path):
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-    ckpt_dict = torch.load(checkpoint_path, map_location="cpu")
+    ckpt_dict = torch.load(checkpoint_path)
     if '.yaml' in config_path:
         config = set_hparams(config_path, global_hparams=False)
         state = ckpt_dict["state_dict"]["model_gen"]
