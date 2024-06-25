@@ -51,7 +51,7 @@ class BaseSVSInfer:
         ckpt = sorted(glob.glob(f'{base_dir}/model_ckpt_steps_*.ckpt'), key=
         lambda x: int(re.findall(f'{base_dir}/model_ckpt_steps_(\d+).ckpt', x)[0]))[-1]
         print('| load HifiGAN: ', ckpt)
-        ckpt_dict = torch.load(ckpt, map_location="cpu")
+        ckpt_dict = torch.load(ckpt)
         config = set_hparams(config_path, global_hparams=False)
         state = ckpt_dict["state_dict"]["model_gen"]
         vocoder = HifiGanGenerator(config)
