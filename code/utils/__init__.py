@@ -185,7 +185,7 @@ def load_ckpt(cur_model, ckpt_base_dir, prefix_in_ckpt='model', force=True, stri
         lambda x: int(re.findall(f'{base_dir}/model_ckpt_steps_(\d+).ckpt', x)[0]))
     if len(checkpoint_path) > 0:
         checkpoint_path = checkpoint_path[-1]
-        state_dict = torch.load(checkpoint_path, map_location="cpu")["state_dict"]
+        state_dict = torch.load(checkpoint_path)["state_dict"]
         state_dict = {k[len(prefix_in_ckpt) + 1:]: v for k, v in state_dict.items()
                       if k.startswith(f'{prefix_in_ckpt}.')}
         if not strict:
