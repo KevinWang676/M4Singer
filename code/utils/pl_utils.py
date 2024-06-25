@@ -659,7 +659,7 @@ class BaseTrainer:
         return did_restore
 
     def restore(self, checkpoint_path, on_gpu):
-        checkpoint = torch.load(checkpoint_path, map_location='cpu')
+        checkpoint = torch.load(checkpoint_path)
 
         # load model state
         model = self.get_model()
