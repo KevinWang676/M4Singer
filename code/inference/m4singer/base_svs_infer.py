@@ -14,6 +14,7 @@ import librosa
 import glob
 import re
 
+import spaces
 
 class BaseSVSInfer:
     def __init__(self, hparams, device=None):
@@ -39,9 +40,11 @@ class BaseSVSInfer:
         self.vocoder.eval()
         self.vocoder.to(self.device)
 
+    @spaces.GPU
     def build_model(self):
         raise NotImplementedError
 
+    @spaces.GPU
     def forward_model(self, inp):
         raise NotImplementedError
 
@@ -51,7 +54,7 @@ class BaseSVSInfer:
         ckpt = sorted(glob.glob(f'{base_dir}/model_ckpt_steps_*.ckpt'), key=
         lambda x: int(re.findall(f'{base_dir}/model_ckpt_steps_(\d+).ckpt', x)[0]))[-1]
         print('| load HifiGAN: ', ckpt)
-        ckpt_dict = torch.load(ckpt)
+        ckpt_dict = torch.load(ckpt, map_location="cpu")
         config = set_hparams(config_path, global_hparams=False)
         state = ckpt_dict["state_dict"]["model_gen"]
         vocoder = HifiGanGenerator(config)
@@ -70,7 +73,8 @@ class BaseSVSInfer:
             y = self.vocoder(c).view(-1)
             # [T]
         return y[None]
-
+        
+    @spaces.GPU
     def preprocess_word_level_input(self, inp):
         # Pypinyin can't solve polyphonic words
         text_raw = inp['text']
@@ -138,6 +142,7 @@ class BaseSVSInfer:
             return None
         return ph_seq, note_lst, midi_dur_lst, is_slur
 
+    @spaces.GPU
     def preprocess_phoneme_level_input(self, inp):
         ph_seq = inp['ph_seq']
         note_lst = inp['note_seq'].split()
@@ -152,6 +157,7 @@ class BaseSVSInfer:
             return None
         return ph_seq, note_lst, midi_dur_lst, is_slur
 
+    @spaces.GPU
     def preprocess_input(self, inp, input_type='word'):
         """
 
